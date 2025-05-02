@@ -5,8 +5,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 import os
 from dotenv import load_dotenv
-import psycopg2
-import psycopg2.extras
 import json
 from urllib.parse import urlparse
 
