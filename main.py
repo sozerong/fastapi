@@ -10,7 +10,7 @@ from neo4j import GraphDatabase
 from urllib.parse import urlparse
 
 # ✅ 환경변수 로드
-load_dotenv("configs/.env")
+load_dotenv("")
 
 # ✅ FastAPI 앱 생성
 app = FastAPI()
