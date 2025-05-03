@@ -6,7 +6,6 @@ import os
 from dotenv import load_dotenv
 import psycopg2
 import psycopg2.extras
-from neo4j import GraphDatabase
 from urllib.parse import urlparse
 
 # ✅ 환경변수 로드
@@ -41,14 +40,8 @@ conn = psycopg2.connect(
 )
 conn.autocommit = True
 
-# ✅ Neo4j 연결
-NEO4J_URI = os.getenv("NEO4J_URI")
-NEO4J_USER = os.getenv("NEO4J_USER")
-NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD")
-driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
-
 # ✅ PostgreSQL (B) 연결: 서울시 매출 요약용 DB
-db_url_sales = os.getenv("SALES_DATABASE_URL")  # 💡 .env에 따로 정의해두세요
+db_url_sales = os.getenv("SALES_DATABASE_URL")
 if not db_url_sales:
     raise RuntimeError("❌ SALES_DATABASE_URL 환경변수를 찾을 수 없습니다.")
 sales_engine = create_engine(db_url_sales)
@@ -67,44 +60,10 @@ def search_answers(query: str = Query(...)):
         results = cur.fetchall()
     return results
 
-# ✅ 2. 전체 지식그래프 반환
+# ✅ 2. 전체 지식그래프 (Neo4j 제거 → 단순 텍스트 응답)
 @app.get("/graph")
 def get_graph(keyword: str = Query(None), all: bool = Query(False)):
-    def full_graph(tx):
-        query = """
-            MATCH (n)-[r]->(m)
-            RETURN n, r, m
-            LIMIT 600
-        """
-        result = tx.run(query)
-        nodes = {}
-        edges = set()
-        for record in result:
-            n = record["n"]
-            m = record["m"]
-            r = record["r"]
-            nid = n.get("name") or n.get("value")
-            mid = m.get("name") or m.get("value")
-            if not nid or not mid:
-                continue
-            nodes[nid] = {"id": nid, "type": list(n.labels)[0]}
-            nodes[mid] = {"id": mid, "type": list(m.labels)[0]}
-            edges.add((nid, mid, r.type))
-        return {
-            "nodes": list(nodes.values()),
-            "edges": [{"source": s, "target": t, "label": l} for s, t, l in edges]
-        }
-
-    def keyword_graph(tx):
-        return {"message": f"'{keyword}'에 대한 그래프는 아직 구현되지 않음."}
-
-    with driver.session() as session:
-        if all:
-            return session.execute_read(full_graph)
-        elif keyword:
-            return session.execute_read(keyword_graph)
-        else:
-            return {"error": "keyword 또는 all 파라미터가 필요합니다."}
+    return {"message": "neo4j"}
 
 # ✅ 3. 자치구별 매출 전체 요약
 @app.get("/sales/{gu_name}")
