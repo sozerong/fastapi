@@ -14,10 +14,13 @@ load_dotenv("")
 # ✅ FastAPI 앱 생성
 app = FastAPI()
 
-# ✅ CORS 허용 설정
+# ✅ CORS 허용 설정 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://capstone-app-mu.vercel.app"],
+    allow_origins=[
+        "https://capstone-app-mu.vercel.app",  # 배포용
+        "http://localhost:3000"               # 로컬 개발용
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
