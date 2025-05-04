@@ -19,7 +19,9 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://capstone-app-mu.vercel.app",  # 배포용
-        "http://localhost:3000"               # 로컬 개발용
+        "http://localhost:3000"          ,    # 로컬 개발용
+        "http://localhost:3000/cafe",
+        "http://localhost:3000/sales"
     ],
     allow_credentials=True,
     allow_methods=["*"],
