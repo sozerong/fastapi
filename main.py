@@ -19,7 +19,7 @@ app.add_middleware(
     allow_origins=[
         "https://capstone-app-mu.vercel.app",
         "http://localhost:3000",
-        "vcc-roan.vercel.app",
+        "http://vcc-roan.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
